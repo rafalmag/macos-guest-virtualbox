@@ -11,11 +11,15 @@
 function set_variables() {
 # Customize the installation by setting these variables:
 vmname="macOS"                   # name of the VirtualBox virtual machine
-storagesize=22000                # VM disk image size in MB. minimum 22000
-cpucount=2                       # VM CPU cores, minimum 2
+storagesize=100000                # VM disk image size in MB. minimum 22000
+cpucount=4                       # VM CPU cores, minimum 2
 memorysize=4096                  # VM RAM in MB, minimum 2048
 gpuvram=128                      # VM video RAM in MB, minimum 34, maximum 128
-resolution="1280x800"            # VM display resolution
+resolution="1920x1080"           # VM display resolution
+
+CpuIdSet="00000001 000106e5 00100800 0098e3fd bfebfbff"
+CpuProfile="Intel Core i7-2635QM"
+GetKeyFromRealSMC=1
 
 # The following commented commands may provide the values for the parameters
 # required by iCloud, iMessage, and other connected Apple applications.
@@ -24,8 +28,8 @@ resolution="1280x800"            # VM display resolution
 # Non-genuine yet genuine-like parameters usually work.
 
 # system_profiler SPHardwareDataType
-DmiSystemFamily="MacBook Pro"        # Model Name
-DmiSystemProduct="MacBookPro11,2"    # Model Identifier
+DmiSystemFamily="Mac Pro"        # Model Name
+DmiSystemProduct="MacPro6,1"    # Model Identifier
 DmiSystemSerial="NO_DEVICE_SN"       # Serial Number (system)
 DmiSystemUuid="CAFECAFE-CAFE-CAFE-CAFE-DECAFFDECAFF" # Hardware UUID
 DmiOEMVBoxVer="string:1"             # Apple ROM Info
@@ -492,7 +496,8 @@ function configure_vm() {
 VBoxManage modifyvm "${vmname}" --cpus "${cpucount}" --memory "${memorysize}" \
  --vram "${gpuvram}" --pae on --boot1 dvd --boot2 disk --boot3 none \
  --boot4 none --firmware efi --rtcuseutc on --usbxhci on --chipset ich9 \
- --mouse usbtablet --keyboard usb --audiocontroller hda --audiocodec stac9221
+ --mouse usbtablet --keyboard usb --audiocontroller hda --audiocodec stac9221 \
+ --cpuidset ${CpuIdSet} --cpu-profile "${CpuProfile}"
 
 VBoxManage setextradata "${vmname}" \
  "VBoxInternal/Devices/efi/0/Config/DmiSystemFamily" "${DmiSystemFamily}"
@@ -544,7 +549,7 @@ VBoxManage setextradata "${vmname}" \
  "VBoxInternal/Devices/smc/0/Config/DeviceKey" \
   "ourhardworkbythesewordsguardedpleasedontsteal(c)AppleComputerInc"
 VBoxManage setextradata "${vmname}" \
- "VBoxInternal/Devices/smc/0/Config/GetKeyFromRealSMC" 0
+ "VBoxInternal/Devices/smc/0/Config/GetKeyFromRealSMC" ${GetKeyFromRealSMC}
 VBoxManage setextradata "${vmname}" \
  "VBoxInternal2/EfiGraphicsResolution" "${resolution}"
 }
